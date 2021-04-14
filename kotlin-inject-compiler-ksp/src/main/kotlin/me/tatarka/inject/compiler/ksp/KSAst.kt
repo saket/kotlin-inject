@@ -363,7 +363,7 @@ private class KSAstType(provider: KSAstProvider, val type: KSType) : AstType(), 
         get() = type.declaration.qualifiedName!!.getQualifier()
 
     override val simpleName: String
-        get() = type.declaration.simpleName.asString()
+        get() = type.declaration.shortName
 
     override val annotations: List<AstAnnotation>
         get() = TODO("Not yet implemented")
