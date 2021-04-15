@@ -181,6 +181,15 @@ class StringArrayFoo(val stringArray: Array<String>)
     abstract val fooFactory: DifferentPackageFoo.Factory
 }
 
+@Component abstract class ProvidesImplicitReturnType {
+    abstract val foo: String
+
+    @Provides
+    fun foo() = privateGetFoo()
+
+    private fun privateGetFoo() = "test"
+}
+
 class ProvidesTest {
 
     @Test fun generates_a_component_that_provides_a_dep_from_a_function() {
