@@ -35,11 +35,12 @@ class InjectGenerator<Output, Provider>(
 
         val constructor = astClass.primaryConstructor
 
-        val injectComponent = generateInjectComponent(astClass, constructor)
+        val injectName = astClass.toInjectName()
+        val injectComponent = generateInjectComponent(astClass, injectName, constructor)
         val createFunction = createGenerator.create(astClass, constructor, injectComponent.typeSpec)
 
         return provider.astFileSpec(
-            FileSpec.builder(astClass.packageName, "Inject${astClass.name}")
+            FileSpec.builder(astClass.packageName, injectName)
                 .apply {
                     createFunction.forEach { addFunction(it) }
                 }, injectComponent
@@ -49,9 +50,10 @@ class InjectGenerator<Output, Provider>(
     @Suppress("ComplexMethod", "LongMethod", "NestedBlockDepth")
     private fun generateInjectComponent(
         astClass: AstClass,
+        injectName: String,
         constructor: AstConstructor?
     ): AstTypeSpec {
-        val context = collectTypes(astClass)
+        val context = collectTypes(astClass, injectName)
         val resolver = TypeResultResolver(this, options)
         val scope = context.collector.scopeClass
         scopeType = scope?.scopeType(options)
@@ -134,7 +136,8 @@ class InjectGenerator<Output, Provider>(
     }
 
     private fun collectTypes(
-        astClass: AstClass
+        astClass: AstClass,
+        injectName: String,
     ): Context {
         val typeCollector = TypeCollector(
             provider = this,
@@ -145,7 +148,7 @@ class InjectGenerator<Output, Provider>(
         val scopeFromParent = elementScopeClass != astClass
         return Context(
             provider = this,
-            className = "Inject${astClass.name}",
+            className = injectName,
             collector = typeCollector,
             scopeInterface = if (scopeFromParent) elementScopeClass else null,
         )
@@ -203,6 +206,9 @@ fun AstMethod.isProvider(): Boolean =
         is AstFunction -> parameters.isEmpty()
         is AstProperty -> true
     } && receiverParameterType == null && returnType.isNotUnit()
+
+fun AstClass.toInjectName(): String =
+    "Inject${asClassName().simpleNames.joinToString("_")}"
 
 private fun dumpGraph(astClass: AstClass, entries: List<TypeResult.Provider>): String {
     val out = StringBuilder(astClass.name).append("\n")
