@@ -11,6 +11,7 @@ import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
 import me.tatarka.inject.annotations.Scope
+import java.util.Locale
 
 val SCOPED_COMPONENT = ClassName("me.tatarka.inject.internal", "ScopedComponent")
 val LAZY_MAP = ClassName("me.tatarka.inject.internal", "LazyMap")
@@ -209,6 +210,10 @@ fun AstMethod.isProvider(): Boolean =
 
 fun AstClass.toInjectName(): String =
     "Inject${asClassName().simpleNames.joinToString("_")}"
+
+fun AstType.toVariableName(): String =
+    simpleName.split(".")
+        .joinToString("_") { it.decapitalize(Locale.US) }
 
 private fun dumpGraph(astClass: AstClass, entries: List<TypeResult.Provider>): String {
     val out = StringBuilder(astClass.name).append("\n")
