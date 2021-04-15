@@ -1,6 +1,7 @@
 KSP issue, to reproduce:
 
 run ./gradlew integration-tests:ksp:test
+
 In integration-tests/common/src/test/kotlin/me/tatarka/inject/test/ProvidesTest.kt,
 modify ProvidesImplicitReturnType from:
 ```kotlin
