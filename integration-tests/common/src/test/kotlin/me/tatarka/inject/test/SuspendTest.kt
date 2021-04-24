@@ -1,13 +1,16 @@
 package me.tatarka.inject.test
 
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import kotlinx.coroutines.runBlocking
 import me.tatarka.inject.annotations.Component
+import me.tatarka.inject.annotations.Inject
 import me.tatarka.inject.annotations.Provides
 import kotlin.test.Test
 
-@Component abstract class SuspendFunctionComponent {
+@Component
+abstract class SuspendFunctionComponent {
     abstract val foo: () -> IFoo
 
     abstract val suspendFoo: suspend () -> IFoo
@@ -19,10 +22,25 @@ import kotlin.test.Test
         @Provides get() = { Foo() }
 }
 
-@Component abstract class SuspendProviderComponent {
+@Component
+abstract class SuspendProviderComponent {
     abstract suspend fun suspendFoo(): IFoo
 
-    @Provides suspend fun suspendProvides(): IFoo = Foo()
+    @Provides
+    suspend fun suspendProvides(): IFoo = Foo()
+}
+
+@Inject
+class SuspendProviderFoo(val provider: suspend () -> String)
+
+suspend fun theProvider(): String = "test"
+
+@Component
+abstract class SuspendFunctionReferenceComponent {
+    abstract val foo: SuspendProviderFoo
+
+    @Provides
+    protected fun provideTheProvider() = ::theProvider
 }
 
 class SuspendTest {
@@ -38,5 +56,12 @@ class SuspendTest {
         val component = SuspendProviderComponent::class.create()
 
         assertThat(component.suspendFoo()).isInstanceOf(Foo::class)
+    }
+
+    @Test
+    fun generates_a_component_that_has_a_suspending_provides_method_reference(): Unit = runBlocking {
+        val component = SuspendFunctionReferenceComponent::class.create()
+
+        assertThat(component.foo.provider()).isEqualTo("test")
     }
 }
