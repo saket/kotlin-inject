@@ -5,14 +5,14 @@ plugins {
     signing
 }
 
-group = rootProject.group
+group = "me.saket.inject"
 version = rootProject.version
 
 fun MavenPublication.mavenCentralPom() {
     pom {
         name.set("kotlin-inject")
         description.set("A compile-time dependency injection library for kotlin")
-        url.set("https://github.com/evant/kotlin-inject")
+        url.set("https://github.com/saket/kotlin-inject")
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -26,9 +26,9 @@ fun MavenPublication.mavenCentralPom() {
             }
         }
         scm {
-            connection.set("https://github.com/evant/kotlin-inject.git")
-            developerConnection.set("https://github.com/evant/kotlin-inject.git")
-            url.set("https://github.com/evant/kotlin-inject")
+            connection.set("https://github.com/saket/kotlin-inject.git")
+            developerConnection.set("https://github.com/saket/kotlin-inject.git")
+            url.set("https://github.com/saket/kotlin-inject")
         }
     }
 }
