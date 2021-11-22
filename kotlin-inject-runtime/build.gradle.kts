@@ -9,6 +9,7 @@ kotlin {
         nativeMain {
             dependencies {
                 implementation(libs.kotlinx.atomicfu)
+                implementation("co.touchlab:stately-iso-collections:1.1.10-a1")
             }
         }
         commonTest {

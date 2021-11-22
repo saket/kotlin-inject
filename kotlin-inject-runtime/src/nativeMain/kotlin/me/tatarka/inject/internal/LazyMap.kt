@@ -1,18 +1,16 @@
 package me.tatarka.inject.internal
 
+import co.touchlab.stately.collections.IsoMutableMap
 import kotlin.native.concurrent.SharedImmutable
-import kotlinx.atomicfu.locks.ReentrantLock
-import kotlinx.atomicfu.locks.withLock
 
 @SharedImmutable
 private val NULL = Any()
 
 actual class LazyMap {
-    private val map = mutableMapOf<String, Any>()
-    private val lock = ReentrantLock()
+    private val map = IsoMutableMap<String, Any>()
 
     actual fun <T> get(key: String, init: () -> T): T {
-        return lock.withLock {
+        return run {
             var result = map[key]
             if (result == null) {
                 result = init() ?: NULL
